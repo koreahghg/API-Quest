@@ -24,7 +24,7 @@ interface RequestState {
   toHttpRequest: () => HttpRequest
 }
 
-const INITIAL_STATE = {
+const getInitialState = () => ({
   method: 'GET' as HttpMethod,
   url: '',
   headers: [
@@ -37,10 +37,10 @@ const INITIAL_STATE = {
   ] satisfies Header[],
   queryParams: [] as QueryParam[],
   body: '',
-}
+})
 
 export const useRequestStore = create<RequestState>((set, get) => ({
-  ...INITIAL_STATE,
+  ...getInitialState(),
 
   setMethod: (method) => set({ method }),
   setUrl: (url) => set({ url }),
@@ -75,7 +75,7 @@ export const useRequestStore = create<RequestState>((set, get) => ({
   removeQueryParam: (id) =>
     set((s) => ({ queryParams: s.queryParams.filter((p) => p.id !== id) })),
 
-  reset: () => set(INITIAL_STATE),
+  reset: () => set(getInitialState()),
 
   toHttpRequest: () => {
     const { method, url, headers, queryParams, body } = get()
