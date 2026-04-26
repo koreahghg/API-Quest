@@ -79,6 +79,13 @@ export const useRequestStore = create<RequestState>((set, get) => ({
 
   toHttpRequest: () => {
     const { method, url, headers, queryParams, body } = get()
-    return { method, url, headers, queryParams, body }
+    const enabledParams = queryParams.filter((p) => p.enabled && p.key)
+    const resolvedUrl =
+      enabledParams.length > 0
+        ? `${url}${url.includes('?') ? '&' : '?'}${new URLSearchParams(
+            enabledParams.map(({ key, value }) => [key, value]),
+          )}`
+        : url
+    return { method, url: resolvedUrl, headers, queryParams, body }
   },
 }))
