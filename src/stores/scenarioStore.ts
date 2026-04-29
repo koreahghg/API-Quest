@@ -64,7 +64,11 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
 
   revealNextHint: (missionId) =>
     set((s) => {
-      const mission = s.scenarios.flatMap((sc) => sc.missions).find((m) => m.id === missionId)
+      const activeMission = get().getActiveMission()
+      const mission =
+        activeMission?.id === missionId
+          ? activeMission
+          : s.scenarios.flatMap((sc) => sc.missions).find((m) => m.id === missionId)
       if (!mission) return {}
       const current = s.missionRevealedHints[missionId] ?? 0
       return {
