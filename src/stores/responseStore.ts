@@ -1,10 +1,10 @@
 import { create } from 'zustand'
 import type { HttpResponse, ApiError } from '@/types'
 
-export type RequestStatus = 'idle' | 'loading' | 'success' | 'error'
+export type ResponseStatus = 'idle' | 'loading' | 'success' | 'error'
 
 interface ResponseState {
-  status: RequestStatus
+  status: ResponseStatus
   response: HttpResponse | null
   error: ApiError | null
 
