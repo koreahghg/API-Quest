@@ -17,47 +17,37 @@ interface EvaluationState {
   reset: () => void
 }
 
+function getNestedValue(obj: unknown, path: string): unknown {
+  return path.split('.').reduce<unknown>((acc, key) => {
+    if (typeof acc === 'object' && acc !== null) {
+      return (acc as Record<string, unknown>)[key]
+    }
+    return undefined
+  }, obj)
+}
+
 function evaluateCondition(
   condition: MissionCondition,
   request: HttpRequest,
   response: HttpResponse,
 ): ConditionResult {
   const base = { type: condition.type, target: condition.target, expected: condition.expected }
+  let actual: unknown
 
-  switch (condition.type) {
-    case 'status_equals': {
-      const actual = response.status
-      return { ...base, actual, passed: actual === condition.expected }
-    }
-    case 'header_present': {
-      const actual = response.headers[condition.target.toLowerCase()]
-      return { ...base, actual, passed: actual !== undefined }
-    }
-    case 'header_equals': {
-      const actual = response.headers[condition.target.toLowerCase()]
-      return { ...base, actual, passed: actual === condition.expected }
-    }
-    case 'body_field_exists': {
-      const body = response.body
-      const actual =
-        typeof body === 'object' && body !== null
-          ? (body as Record<string, unknown>)[condition.target]
-          : undefined
-      return { ...base, actual, passed: actual !== undefined }
-    }
-    case 'body_field_equals': {
-      const body = response.body
-      const actual =
-        typeof body === 'object' && body !== null
-          ? (body as Record<string, unknown>)[condition.target]
-          : undefined
-      return { ...base, actual, passed: actual === condition.expected }
-    }
-    case 'method_equals': {
-      const actual = request.method
-      return { ...base, actual, passed: actual === condition.expected }
-    }
+  if (condition.type === 'status_equals') {
+    actual = response.status
+  } else if (condition.type === 'method_equals') {
+    actual = request.method
+  } else if (condition.type.startsWith('header_')) {
+    actual = response.headers[condition.target.toLowerCase()]
+  } else if (condition.type.startsWith('body_')) {
+    actual = getNestedValue(response.body, condition.target)
   }
+
+  const isPresence = condition.type === 'header_present' || condition.type === 'body_field_exists'
+  const passed = isPresence ? actual !== undefined : actual === condition.expected
+
+  return { ...base, actual, passed }
 }
 
 export const useEvaluationStore = create<EvaluationState>((set) => ({
