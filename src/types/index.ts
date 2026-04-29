@@ -9,3 +9,4 @@ export type {
   ScenarioDifficulty,
   Scenario,
 } from './scenario'
+export type { ConditionResult, MissionEvaluation } from './evaluation'
