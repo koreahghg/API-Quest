@@ -26,7 +26,6 @@ export interface Mission {
   targetEndpoint: string
   conditions: MissionCondition[]
   hints: string[]
-  revealedHintCount: number
   status: MissionStatus
   attempts: number
   completedAt?: number
