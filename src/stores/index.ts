@@ -1,4 +1,6 @@
 export { useRequestStore } from './requestStore'
 export { useResponseStore } from './responseStore'
-export type { RequestStatus } from './responseStore'
+export type { ResponseStatus } from './responseStore'
 export { useScenarioStore } from './scenarioStore'
+export { useEvaluationStore } from './evaluationStore'
+export type { EvaluationStatus } from './evaluationStore'

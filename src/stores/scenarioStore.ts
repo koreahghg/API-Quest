@@ -5,6 +5,7 @@ interface ScenarioState {
   scenarios: Scenario[]
   activeScenarioId: string | null
   activeMissionId: string | null
+  missionRevealedHints: Record<string, number>
 
   setScenarios: (scenarios: Scenario[]) => void
   setActiveScenario: (id: string) => void
@@ -15,12 +16,14 @@ interface ScenarioState {
 
   getActiveScenario: () => Scenario | null
   getActiveMission: () => Mission | null
+  getRevealedHintCount: (missionId: string) => number
 }
 
 export const useScenarioStore = create<ScenarioState>((set, get) => ({
   scenarios: [],
   activeScenarioId: null,
   activeMissionId: null,
+  missionRevealedHints: {},
 
   setScenarios: (scenarios) => set({ scenarios }),
 
@@ -60,16 +63,21 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
     })),
 
   revealNextHint: (missionId) =>
-    set((s) => ({
-      scenarios: s.scenarios.map((scenario) => ({
-        ...scenario,
-        missions: scenario.missions.map((m) =>
-          m.id === missionId
-            ? { ...m, revealedHintCount: Math.min(m.revealedHintCount + 1, m.hints.length) }
-            : m,
-        ),
-      })),
-    })),
+    set((s) => {
+      const activeMission = get().getActiveMission()
+      const mission =
+        activeMission?.id === missionId
+          ? activeMission
+          : s.scenarios.flatMap((sc) => sc.missions).find((m) => m.id === missionId)
+      if (!mission) return {}
+      const current = s.missionRevealedHints[missionId] ?? 0
+      return {
+        missionRevealedHints: {
+          ...s.missionRevealedHints,
+          [missionId]: Math.min(current + 1, mission.hints.length),
+        },
+      }
+    }),
 
   getActiveScenario: () => {
     const { scenarios, activeScenarioId } = get()
@@ -81,4 +89,6 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
     const scenario = get().getActiveScenario()
     return scenario?.missions.find((m) => m.id === activeMissionId) ?? null
   },
+
+  getRevealedHintCount: (missionId) => get().missionRevealedHints[missionId] ?? 0,
 }))
