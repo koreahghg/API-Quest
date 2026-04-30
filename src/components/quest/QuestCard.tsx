@@ -21,7 +21,7 @@ interface Props {
 
 export function QuestCard({ scenario, isLocked, onStart }: Props) {
   const completedCount = scenario.missions.filter((m) => m.status === 'completed').length
-  const progress = completedCount / scenario.missions.length
+  const progress = scenario.missions.length > 0 ? completedCount / scenario.missions.length : 0
   const isCompleted = completedCount === scenario.missions.length && scenario.missions.length > 0
 
   return (
