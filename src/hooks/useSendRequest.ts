@@ -35,7 +35,7 @@ export function useSendRequest() {
     const startTime = Date.now()
 
     try {
-      const headers: Record<string, string> = {}
+      const headers: Record<string, string> = Object.create(null)
       request.headers
         .filter((h) => h.enabled && h.key)
         .forEach((h) => { headers[h.key] = h.value })
