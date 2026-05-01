@@ -1,16 +1,15 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useScenarioStore, useEvaluationStore } from '@/stores'
+import { useEffect } from 'react'
+import { useScenarioStore, useEvaluationStore, useUiStore } from '@/stores'
 import { QuestSelector } from '@/components/quest/QuestSelector'
 import { MissionSidebar } from '@/components/mission/MissionSidebar'
 import { PlaygroundPanel } from '@/components/playground/PlaygroundPanel'
 import { MissionResult } from '@/components/mission/MissionResult'
 import { INITIAL_SCENARIOS } from '@/data/scenarios'
 
-type View = 'home' | 'mission'
-
 export default function Home() {
-  const [view, setView] = useState<View>('home')
+  const view = useUiStore((s) => s.view)
+  const setView = useUiStore((s) => s.setView)
 
   const scenarios = useScenarioStore((s) => s.scenarios)
   const setScenarios = useScenarioStore((s) => s.setScenarios)
@@ -23,8 +22,7 @@ export default function Home() {
 
   useEffect(() => {
     setScenarios(INITIAL_SCENARIOS)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [setScenarios])
 
   const handleStart = (scenarioId: string) => {
     setActiveScenario(scenarioId)
