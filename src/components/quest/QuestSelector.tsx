@@ -1,4 +1,5 @@
 'use client'
+import { useMemo } from 'react'
 import type { Scenario } from '@/types'
 import { QuestCard } from './QuestCard'
 
@@ -8,7 +9,10 @@ interface Props {
 }
 
 export function QuestSelector({ scenarios, onStart }: Props) {
-  const sorted = [...scenarios].sort((a, b) => a.order - b.order)
+  const sorted = useMemo(
+    () => [...scenarios].sort((a, b) => a.order - b.order),
+    [scenarios],
+  )
 
   return (
     <div className="min-h-screen bg-gray-950 p-8">
