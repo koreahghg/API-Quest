@@ -13,7 +13,9 @@ export function MSWProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
-      initMocks().then(() => setReady(true))
+      initMocks()
+        .catch((error) => console.error('MSW initialization failed:', error))
+        .finally(() => setReady(true))
     }
   }, [])
 
