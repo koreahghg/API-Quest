@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { MSWProvider } from '@/components/MSWProvider'
 
 export const metadata: Metadata = {
   title: 'API Quest',
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <MSWProvider>{children}</MSWProvider>
+      </body>
     </html>
   )
 }
