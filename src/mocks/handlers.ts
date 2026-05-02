@@ -23,8 +23,13 @@ export const handlers = [
 
   // JSONPlaceholder — POST /posts (201 반환)
   http.post('https://jsonplaceholder.typicode.com/posts', async ({ request }) => {
-    const body = await request.json()
-    return HttpResponse.json({ id: 101, ...(body as object) }, { status: 201 })
+    let body: object = {}
+    try {
+      body = (await request.json()) as object
+    } catch {
+      // 바디 없이 온 요청도 201로 통과
+    }
+    return HttpResponse.json({ id: 101, ...body }, { status: 201 })
   }),
 
   // JSONPlaceholder — DELETE /posts/:id
@@ -47,7 +52,12 @@ export const handlers = [
 
   // reqres.in — POST /api/login (password 누락 시 400)
   http.post('https://reqres.in/api/login', async ({ request }) => {
-    const body = (await request.json()) as Record<string, string>
+    let body: Record<string, string> = {}
+    try {
+      body = (await request.json()) as Record<string, string>
+    } catch {
+      return HttpResponse.json({ error: 'Missing password' }, { status: 400 })
+    }
     if (!body.password) {
       return HttpResponse.json({ error: 'Missing password' }, { status: 400 })
     }
