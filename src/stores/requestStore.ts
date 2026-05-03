@@ -15,10 +15,12 @@ interface RequestState {
   addHeader: () => void
   updateHeader: (id: string, patch: Partial<Omit<Header, 'id'>>) => void
   removeHeader: (id: string) => void
+  setHeaders: (headers: Header[]) => void
 
   addQueryParam: () => void
   updateQueryParam: (id: string, patch: Partial<Omit<QueryParam, 'id'>>) => void
   removeQueryParam: (id: string) => void
+  setQueryParams: (queryParams: QueryParam[]) => void
 
   reset: () => void
   toHttpRequest: () => HttpRequest
@@ -59,6 +61,8 @@ export const useRequestStore = create<RequestState>((set, get) => ({
   removeHeader: (id) =>
     set((s) => ({ headers: s.headers.filter((h) => h.id !== id) })),
 
+  setHeaders: (headers) => set({ headers }),
+
   addQueryParam: () =>
     set((s) => ({
       queryParams: [
@@ -74,6 +78,8 @@ export const useRequestStore = create<RequestState>((set, get) => ({
 
   removeQueryParam: (id) =>
     set((s) => ({ queryParams: s.queryParams.filter((p) => p.id !== id) })),
+
+  setQueryParams: (queryParams) => set({ queryParams }),
 
   reset: () => set(getInitialState()),
 
