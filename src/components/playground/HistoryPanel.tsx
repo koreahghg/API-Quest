@@ -46,7 +46,8 @@ export function HistoryPanel({ onClose }: Props) {
     setUrl(entry.request.url)
     setBody(entry.request.body)
     setHeaders(entry.request.headers)
-    setQueryParams(entry.request.queryParams)
+    // url은 이미 파라미터가 포함된 resolved URL이므로 queryParams를 비워 중복 방지
+    setQueryParams([])
     onClose()
   }
 
