@@ -1,5 +1,5 @@
 'use client'
-import { useRequestStore, useResponseStore, useEvaluationStore, useScenarioStore } from '@/stores'
+import { useRequestStore, useResponseStore, useEvaluationStore, useScenarioStore, useHistoryStore } from '@/stores'
 import { STATUS_HINTS } from '@/constants/statusHints'
 import type { HttpResponse } from '@/types'
 
@@ -14,6 +14,7 @@ export function useSendRequest() {
   const incrementAttempts = useScenarioStore((s) => s.incrementAttempts)
   const completeMission = useScenarioStore((s) => s.completeMission)
   const revealNextHint = useScenarioStore((s) => s.revealNextHint)
+  const addEntry = useHistoryStore((s) => s.addEntry)
 
   const send = async () => {
     const request = toHttpRequest()
@@ -72,6 +73,7 @@ export function useSendRequest() {
       }
 
       setSuccess(response)
+      addEntry({ request, response, error: null, timestamp: Date.now() })
 
       const mission = getActiveMission()
       if (mission && mission.status === 'active') {
@@ -91,11 +93,9 @@ export function useSendRequest() {
         message.toLowerCase().includes('network')
       const kind = isCors ? 'cors' : 'network'
 
-      setError({
-        kind,
-        message,
-        hint: STATUS_HINTS[kind],
-      })
+      const apiError = { kind, message, hint: STATUS_HINTS[kind] } as const
+      setError(apiError)
+      addEntry({ request, response: null, error: apiError, timestamp: Date.now() })
     }
   }
 

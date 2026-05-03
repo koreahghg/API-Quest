@@ -2,10 +2,17 @@
 import { useRequestStore, useResponseStore } from '@/stores'
 import { useSendRequest } from '@/hooks/useSendRequest'
 import { MethodSelector } from './MethodSelector'
+import { CopyButton } from './CopyButton'
+import { formatAsCurl } from '@/lib/formatCurl'
 
-export function UrlBar() {
+interface Props {
+  onShowHistory: () => void
+}
+
+export function UrlBar({ onShowHistory }: Props) {
   const url = useRequestStore((s) => s.url)
   const setUrl = useRequestStore((s) => s.setUrl)
+  const toHttpRequest = useRequestStore((s) => s.toHttpRequest)
   const responseStatus = useResponseStore((s) => s.status)
   const { send } = useSendRequest()
 
@@ -23,6 +30,14 @@ export function UrlBar() {
         className="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm font-mono
           text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-500"
       />
+      <CopyButton getText={() => formatAsCurl(toHttpRequest())} label="cURL" />
+      <button
+        onClick={onShowHistory}
+        className="px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-400
+          hover:text-gray-200 text-xs rounded transition-colors shrink-0"
+      >
+        History
+      </button>
       <button
         onClick={send}
         disabled={isLoading}
