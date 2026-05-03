@@ -90,8 +90,12 @@ export const handlers = [
     return HttpResponse.json({ id: 1, email: 'user@example.com', name: '홍길동', role: 'user' })
   }),
 
-  // api.quest — GET /v1/admin/users (항상 403, 일반 사용자 접근 불가)
-  http.get('https://api.quest/v1/admin/users', () => {
+  // api.quest — GET /v1/admin/users (토큰 없으면 401, 있으면 권한 부족 403)
+  http.get('https://api.quest/v1/admin/users', ({ request }) => {
+    const auth = request.headers.get('Authorization')
+    if (!auth) {
+      return HttpResponse.json({ message: '인증이 필요합니다.' }, { status: 401 })
+    }
     return HttpResponse.json({ message: '관리자 권한이 필요합니다.' }, { status: 403 })
   }),
 

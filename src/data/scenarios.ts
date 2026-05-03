@@ -263,7 +263,7 @@ export const INITIAL_SCENARIOS: Scenario[] = [
         order: 4,
         title: '권한 없는 관리자 리소스 접근 — 403 Forbidden',
         description:
-          '일반 사용자 권한으로 관리자 전용 엔드포인트에 접근해보세요.\n\n[상황] 401과 403은 다릅니다. 401은 "당신이 누구인지 모름", 403은 "알지만 권한이 없음"입니다.\n[목표] GET 요청을 보내 403 응답과 message 필드를 확인하세요.\n[실패 조건] 다른 상태코드 수신.\n\nhttps://api.quest/v1/admin/users',
+          '토큰을 가진 일반 사용자로 관리자 전용 엔드포인트에 접근해보세요.\n\n[상황] 401과 403은 다릅니다. 토큰이 없으면 401("당신이 누구인지 모름"), 토큰이 있지만 권한이 없으면 403("알지만 권한이 없음")이 반환됩니다.\n[목표] Authorization 헤더를 포함해서 요청을 보내 403과 message 필드를 확인하세요.\n[실패 조건] Authorization 헤더 없이 요청(→ 401 반환), 다른 상태코드 수신.\n\nhttps://api.quest/v1/admin/users',
         targetMethod: 'GET',
         targetEndpoint: 'https://api.quest/v1/admin/users',
         conditions: [
@@ -271,9 +271,9 @@ export const INITIAL_SCENARIOS: Scenario[] = [
           { type: 'body_field_exists', target: 'message' },
         ],
         hints: [
-          '403 Forbidden — 인증은 됐지만 해당 리소스에 대한 권한이 없습니다.',
-          '401과 403의 차이: 401은 로그인 필요, 403은 권한 부족입니다.',
-          'URL: https://api.quest/v1/admin/users  (GET 메서드)',
+          '먼저 Authorization 헤더 없이 보내보세요 — 401이 옵니다. 이게 바로 401과 403의 차이입니다.',
+          'Headers 탭에 Authorization 헤더를 추가해야 403으로 바뀝니다.',
+          'Headers: Authorization = Bearer eyJhbGciOiJIUzI1NiJ9.mock-token',
         ],
         status: 'locked',
         attempts: 0,
