@@ -188,4 +188,138 @@ export const INITIAL_SCENARIOS: Scenario[] = [
       },
     ],
   },
+  {
+    id: 'auth-advanced',
+    title: '인증과 권한의 벽',
+    description: '로그인 성공부터 401·403·500·지연 응답까지, 실제 인증 시스템의 동작을 단계적으로 경험합니다.',
+    difficulty: 'advanced',
+    tags: ['인증', 'Bearer', '401', '403', '500', '지연'],
+    order: 3,
+    missions: [
+      {
+        id: 'aa-1',
+        scenarioId: 'auth-advanced',
+        order: 1,
+        title: '로그인 성공',
+        description:
+          '올바른 자격증명으로 로그인하고 토큰을 발급받으세요.\n\n[상황] 이 API는 로그인 성공 시 응답 바디에 token을 반환합니다.\n[목표] 200 응답을 받고, 응답에 token 필드가 있어야 합니다.\n[실패 조건] 잘못된 자격증명 사용, GET 메서드 사용, token 없는 응답.\n\nhttps://api.quest/v1/auth/login',
+        targetMethod: 'POST',
+        targetEndpoint: 'https://api.quest/v1/auth/login',
+        conditions: [
+          { type: 'method_equals', target: 'method', expected: 'POST' },
+          { type: 'status_equals', target: 'status', expected: 200 },
+          { type: 'body_field_exists', target: 'token' },
+        ],
+        hints: [
+          '로그인은 POST 메서드로 자격증명을 바디에 담아 보냅니다.',
+          'Body 탭에 JSON 형식으로 이메일과 비밀번호를 입력하세요.',
+          '바디: {"email": "user@example.com", "password": "secret123"}',
+        ],
+        status: 'active',
+        attempts: 0,
+      },
+      {
+        id: 'aa-2',
+        scenarioId: 'auth-advanced',
+        order: 2,
+        title: '로그인 실패 — 401 Unauthorized',
+        description:
+          '이번엔 의도적으로 틀린 비밀번호를 보내서 401을 경험하세요.\n\n[상황] 서버는 자격증명이 틀리면 401을 반환합니다.\n[목표] 401 응답과 에러 메시지(message 필드)를 확인하세요.\n[실패 조건] 올바른 자격증명 사용, 다른 상태코드 수신.\n\nhttps://api.quest/v1/auth/login',
+        targetMethod: 'POST',
+        targetEndpoint: 'https://api.quest/v1/auth/login',
+        conditions: [
+          { type: 'status_equals', target: 'status', expected: 401 },
+          { type: 'body_field_exists', target: 'message' },
+        ],
+        hints: [
+          '401 Unauthorized — 신원 확인에 실패했다는 의미입니다.',
+          '같은 URL에 같은 email, 다른 password를 보내보세요.',
+          '바디: {"email": "user@example.com", "password": "wrong"}',
+        ],
+        status: 'locked',
+        attempts: 0,
+      },
+      {
+        id: 'aa-3',
+        scenarioId: 'auth-advanced',
+        order: 3,
+        title: '토큰 없이 보호된 엔드포인트 접근 — 401',
+        description:
+          'Authorization 헤더 없이 프로필 엔드포인트에 접근해보세요.\n\n[상황] 이 엔드포인트는 로그인한 사용자만 접근 가능합니다.\n[목표] 헤더 없이 GET 요청을 보내 401 응답을 받으세요.\n[실패 조건] Authorization 헤더를 포함한 요청, 200 응답 수신.\n\nhttps://api.quest/v1/profile',
+        targetMethod: 'GET',
+        targetEndpoint: 'https://api.quest/v1/profile',
+        conditions: [{ type: 'status_equals', target: 'status', expected: 401 }],
+        hints: [
+          '보호된 엔드포인트는 반드시 토큰이 있어야 200을 반환합니다.',
+          'Headers 탭에 아무것도 추가하지 말고 GET 요청을 보내보세요.',
+          'URL: https://api.quest/v1/profile  (헤더 없이)',
+        ],
+        status: 'locked',
+        attempts: 0,
+      },
+      {
+        id: 'aa-4',
+        scenarioId: 'auth-advanced',
+        order: 4,
+        title: '권한 없는 관리자 리소스 접근 — 403 Forbidden',
+        description:
+          '일반 사용자 권한으로 관리자 전용 엔드포인트에 접근해보세요.\n\n[상황] 401과 403은 다릅니다. 401은 "당신이 누구인지 모름", 403은 "알지만 권한이 없음"입니다.\n[목표] GET 요청을 보내 403 응답과 message 필드를 확인하세요.\n[실패 조건] 다른 상태코드 수신.\n\nhttps://api.quest/v1/admin/users',
+        targetMethod: 'GET',
+        targetEndpoint: 'https://api.quest/v1/admin/users',
+        conditions: [
+          { type: 'status_equals', target: 'status', expected: 403 },
+          { type: 'body_field_exists', target: 'message' },
+        ],
+        hints: [
+          '403 Forbidden — 인증은 됐지만 해당 리소스에 대한 권한이 없습니다.',
+          '401과 403의 차이: 401은 로그인 필요, 403은 권한 부족입니다.',
+          'URL: https://api.quest/v1/admin/users  (GET 메서드)',
+        ],
+        status: 'locked',
+        attempts: 0,
+      },
+      {
+        id: 'aa-5',
+        scenarioId: 'auth-advanced',
+        order: 5,
+        title: '서버 오류 경험 — 500 Internal Server Error',
+        description:
+          '서버 내부 오류를 직접 경험해보세요.\n\n[상황] 500은 클라이언트 요청이 잘못된 게 아니라 서버 쪽 문제입니다.\n[목표] GET 요청을 보내 500 응답과 code 필드를 확인하세요.\n[실패 조건] 다른 상태코드 수신.\n\nhttps://api.quest/v1/trigger-error',
+        targetMethod: 'GET',
+        targetEndpoint: 'https://api.quest/v1/trigger-error',
+        conditions: [
+          { type: 'status_equals', target: 'status', expected: 500 },
+          { type: 'body_field_exists', target: 'code' },
+        ],
+        hints: [
+          '500 Internal Server Error — 서버가 요청을 처리하다 예상치 못한 오류를 만났습니다.',
+          '이 경우 재시도하거나, 서버 담당자에게 알려야 합니다. 클라이언트 잘못이 아닙니다.',
+          'URL: https://api.quest/v1/trigger-error  (GET 메서드)',
+        ],
+        status: 'locked',
+        attempts: 0,
+      },
+      {
+        id: 'aa-6',
+        scenarioId: 'auth-advanced',
+        order: 6,
+        title: '느린 응답 — 네트워크 지연 체감',
+        description:
+          '응답이 느린 엔드포인트에 요청을 보내고 기다려보세요.\n\n[상황] 이 엔드포인트는 응답에 2초가 걸립니다. 실제 서비스에서는 이런 경우 로딩 표시가 필요합니다.\n[목표] GET 요청을 보내 2초 후 200 응답과 data 필드를 확인하세요.\n[실패 조건] 응답 전에 취소, 다른 상태코드 수신.\n\nhttps://api.quest/v1/slow-data',
+        targetMethod: 'GET',
+        targetEndpoint: 'https://api.quest/v1/slow-data',
+        conditions: [
+          { type: 'status_equals', target: 'status', expected: 200 },
+          { type: 'body_field_exists', target: 'data' },
+        ],
+        hints: [
+          '서버가 느릴 수 있습니다. 요청을 보내고 응답을 기다려보세요.',
+          '실제 프론트엔드에서는 이 2초 동안 사용자에게 로딩 스피너를 보여줘야 합니다.',
+          'URL: https://api.quest/v1/slow-data  — 그냥 보내고 기다리면 됩니다.',
+        ],
+        status: 'locked',
+        attempts: 0,
+      },
+    ],
+  },
 ]
