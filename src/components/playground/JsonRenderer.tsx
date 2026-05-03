@@ -6,6 +6,8 @@ type JsonArray = JsonValue[]
 type JsonValue = JsonPrimitive | JsonObject | JsonArray
 
 function JsonNode({ value, depth = 0 }: { value: JsonValue; depth?: number }) {
+  if (depth > 20) return <span className="text-gray-500">...</span>
+
   const pad = '  '.repeat(depth)
   const padInner = '  '.repeat(depth + 1)
 
