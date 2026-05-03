@@ -250,9 +250,9 @@ export const INITIAL_SCENARIOS: Scenario[] = [
         targetEndpoint: 'https://api.quest/v1/profile',
         conditions: [{ type: 'status_equals', target: 'status', expected: 401 }],
         hints: [
-          '보호된 엔드포인트는 반드시 토큰이 있어야 200을 반환합니다.',
+          '보호된 엔드포인트는 반드시 유효한 토큰이 있어야 200을 반환합니다.',
           'Headers 탭에 아무것도 추가하지 말고 GET 요청을 보내보세요.',
-          'URL: https://api.quest/v1/profile  (헤더 없이)',
+          '성공하려면 Headers에 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.mock-token 을 추가하세요.',
         ],
         status: 'locked',
         attempts: 0,

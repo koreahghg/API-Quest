@@ -81,11 +81,11 @@ export const handlers = [
     return HttpResponse.json({ message: '이메일 또는 비밀번호가 잘못되었습니다.' }, { status: 401 })
   }),
 
-  // api.quest — GET /v1/profile (Authorization 헤더 없으면 401)
+  // api.quest — GET /v1/profile (aa-1에서 발급한 토큰과 일치해야 200)
   http.get('https://api.quest/v1/profile', ({ request }) => {
     const auth = request.headers.get('Authorization')
-    if (!auth) {
-      return HttpResponse.json({ message: 'Authorization 헤더가 없습니다.' }, { status: 401 })
+    if (auth !== 'Bearer eyJhbGciOiJIUzI1NiJ9.mock-token') {
+      return HttpResponse.json({ message: '유효하지 않거나 없는 토큰입니다.' }, { status: 401 })
     }
     return HttpResponse.json({ id: 1, email: 'user@example.com', name: '홍길동', role: 'user' })
   }),
