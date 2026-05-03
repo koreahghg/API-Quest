@@ -7,13 +7,14 @@ export function formatAsCurl(request: HttpRequest): string {
     parts.push(`-X ${request.method}`)
   }
 
+  const sq = (s: string) => s.replace(/'/g, "'\\''")
   for (const h of request.headers.filter((h) => h.enabled && h.key)) {
-    parts.push(`-H '${h.key}: ${h.value}'`)
+    parts.push(`-H '${sq(h.key)}: ${sq(h.value)}'`)
   }
 
   const hasBody = request.method !== 'GET' && request.method !== 'DELETE'
   if (hasBody && request.body) {
-    parts.push(`-d '${request.body.replace(/'/g, "'\\''")}'`)
+    parts.push(`-d '${sq(request.body)}'`)
   }
 
   parts.push(`'${request.url}'`)
