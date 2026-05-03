@@ -17,7 +17,7 @@ export function formatAsCurl(request: HttpRequest): string {
     parts.push(`-d '${sq(request.body)}'`)
   }
 
-  parts.push(`'${request.url}'`)
+  parts.push(`'${sq(request.url)}'`)
 
   return parts.join(' \\\n  ')
 }
