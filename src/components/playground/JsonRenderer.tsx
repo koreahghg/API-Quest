@@ -22,13 +22,7 @@ function JsonNode({ value, depth = 0 }: { value: JsonValue; depth?: number }) {
   }
 
   if (typeof value === 'string') {
-    const safe = value
-      .replace(/\\/g, '\\\\')
-      .replace(/"/g, '\\"')
-      .replace(/\n/g, '\\n')
-      .replace(/\r/g, '\\r')
-      .replace(/\t/g, '\\t')
-    return <span className="text-emerald-400">"{safe}"</span>
+    return <span className="text-emerald-400">{JSON.stringify(value)}</span>
   }
 
   if (Array.isArray(value)) {
