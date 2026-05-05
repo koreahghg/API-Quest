@@ -1,11 +1,12 @@
 import { act, renderHook } from '@testing-library/react'
-import { http, HttpResponse } from 'msw'
+import { http } from 'msw'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { useSendRequest } from '../useSendRequest'
 import { useEvaluationStore } from '@/stores/evaluationStore'
 import { useHistoryStore } from '@/stores/historyStore'
 import { useRequestStore } from '@/stores/requestStore'
 import { useResponseStore } from '@/stores/responseStore'
+import { useScenarioStore } from '@/stores/scenarioStore'
 import { server } from '@/test/mocks/server'
 
 // ── 공통 초기화 ───────────────────────────────────────────────────────────────
@@ -15,6 +16,7 @@ beforeEach(() => {
   useResponseStore.getState().reset()
   useEvaluationStore.getState().reset()
   useHistoryStore.getState().clear()
+  useScenarioStore.setState({ scenarios: [], activeScenarioId: null, activeMissionId: null, missionRevealedHints: {} })
 })
 
 // ── URL 유효성 검사 ───────────────────────────────────────────────────────────
