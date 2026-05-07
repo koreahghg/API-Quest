@@ -28,6 +28,10 @@ export function useSendRequest() {
       ...h,
       value: interpolate(h.value, variables),
     }))
+    const resolvedQueryParams = request.queryParams.map((p) => ({
+      ...p,
+      value: interpolate(p.value, variables),
+    }))
     const resolvedBody = request.body ? interpolate(request.body, variables) : request.body
 
     try {
@@ -90,7 +94,7 @@ export function useSendRequest() {
       const mission = getActiveMission()
       if (mission && mission.status === 'active') {
         // 미션 평가는 실제로 전송된 값(치환 후)으로 수행
-        const resolvedRequest = { ...request, url: resolvedUrl, headers: resolvedHeaders, body: resolvedBody }
+        const resolvedRequest = { ...request, url: resolvedUrl, headers: resolvedHeaders, queryParams: resolvedQueryParams, body: resolvedBody }
         const evaluation = evaluate(mission, resolvedRequest, response)
         incrementAttempts(mission.id)
         if (evaluation.passed) {
