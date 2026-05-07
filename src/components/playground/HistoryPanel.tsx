@@ -2,6 +2,8 @@
 import { useHistoryStore, useRequestStore } from '@/stores'
 import type { HistoryEntry } from '@/stores'
 import type { HttpMethod } from '@/types'
+import { getStatusColor } from '@/lib/statusColor'
+import { PanelOverlay } from './PanelOverlay'
 
 const METHOD_COLORS: Record<HttpMethod, string> = {
   GET: 'text-emerald-400',
@@ -23,9 +25,7 @@ function StatusLabel({ entry }: { entry: HistoryEntry }) {
   if (entry.error) return <span className="text-red-400 text-xs font-mono">ERR</span>
   if (!entry.response) return null
   const { status } = entry.response
-  const color =
-    status < 300 ? 'text-emerald-400' : status < 400 ? 'text-sky-400' : 'text-red-400'
-  return <span className={`${color} text-xs font-mono`}>{status}</span>
+  return <span className={`${getStatusColor(status)} text-xs font-mono`}>{status}</span>
 }
 
 interface Props {
@@ -52,7 +52,7 @@ export function HistoryPanel({ onClose }: Props) {
   }
 
   return (
-    <div className="absolute inset-0 z-10 bg-gray-950 flex flex-col">
+    <PanelOverlay onClose={onClose}>
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-800 shrink-0">
         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
           History
@@ -105,6 +105,6 @@ export function HistoryPanel({ onClose }: Props) {
           ))}
         </div>
       )}
-    </div>
+    </PanelOverlay>
   )
 }

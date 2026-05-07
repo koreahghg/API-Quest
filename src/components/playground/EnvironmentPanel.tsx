@@ -1,5 +1,6 @@
 'use client'
 import { useEnvStore } from '@/stores'
+import { PanelOverlay } from './PanelOverlay'
 
 interface Props {
   onClose: () => void
@@ -13,7 +14,7 @@ export function EnvironmentPanel({ onClose }: Props) {
   const removeVariable = useEnvStore((s) => s.removeVariable)
 
   return (
-    <div className="absolute inset-0 z-10 bg-gray-950 flex flex-col">
+    <PanelOverlay onClose={onClose}>
       <div className="flex items-start justify-between px-4 py-3 border-b border-gray-800 shrink-0">
         <div>
           <span className="text-sm font-semibold text-gray-200">Environment Variables</span>
@@ -87,6 +88,6 @@ export function EnvironmentPanel({ onClose }: Props) {
           </div>
         )}
       </div>
-    </div>
+    </PanelOverlay>
   )
 }
