@@ -1,16 +1,11 @@
 'use client'
-import { useRequestStore, useResponseStore, useEnvStore } from '@/stores'
+import { useRequestStore, useResponseStore, useEnvStore, useUiStore } from '@/stores'
 import { useSendRequest } from '@/hooks/useSendRequest'
 import { MethodSelector } from './MethodSelector'
 import { CopyButton } from './CopyButton'
 import { formatAsCurl } from '@/lib/formatCurl'
 
-interface Props {
-  onShowHistory: () => void
-  onShowEnv: () => void
-}
-
-export function UrlBar({ onShowHistory, onShowEnv }: Props) {
+export function UrlBar() {
   const url = useRequestStore((s) => s.url)
   const setUrl = useRequestStore((s) => s.setUrl)
   const toHttpRequest = useRequestStore((s) => s.toHttpRequest)
@@ -18,6 +13,7 @@ export function UrlBar({ onShowHistory, onShowEnv }: Props) {
   const activeVarCount = useEnvStore((s) =>
     s.variables.filter((v) => v.enabled && v.key).length
   )
+  const openPanel = useUiStore((s) => s.openPanel)
   const { send } = useSendRequest()
 
   const isLoading = responseStatus === 'loading'
@@ -37,14 +33,14 @@ export function UrlBar({ onShowHistory, onShowEnv }: Props) {
       />
       <CopyButton getText={() => formatAsCurl(toHttpRequest())} label="cURL" />
       <button
-        onClick={onShowHistory}
+        onClick={() => openPanel('history')}
         className="px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-400
           hover:text-gray-200 text-xs rounded transition-colors shrink-0"
       >
         History
       </button>
       <button
-        onClick={onShowEnv}
+        onClick={() => openPanel('env')}
         className="relative px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700
           text-gray-400 hover:text-gray-200 text-xs rounded transition-colors shrink-0"
       >
