@@ -1,5 +1,5 @@
 'use client'
-import { useRequestStore, useResponseStore } from '@/stores'
+import { useRequestStore, useResponseStore, useEnvStore } from '@/stores'
 import { useSendRequest } from '@/hooks/useSendRequest'
 import { MethodSelector } from './MethodSelector'
 import { CopyButton } from './CopyButton'
@@ -7,16 +7,21 @@ import { formatAsCurl } from '@/lib/formatCurl'
 
 interface Props {
   onShowHistory: () => void
+  onShowEnv: () => void
 }
 
-export function UrlBar({ onShowHistory }: Props) {
+export function UrlBar({ onShowHistory, onShowEnv }: Props) {
   const url = useRequestStore((s) => s.url)
   const setUrl = useRequestStore((s) => s.setUrl)
   const toHttpRequest = useRequestStore((s) => s.toHttpRequest)
   const responseStatus = useResponseStore((s) => s.status)
+  const activeVarCount = useEnvStore((s) =>
+    s.variables.filter((v) => v.enabled && v.key).length
+  )
   const { send } = useSendRequest()
 
   const isLoading = responseStatus === 'loading'
+  const hasVars = activeVarCount > 0
 
   return (
     <div className="flex gap-2 p-3 border-b border-gray-800 shrink-0">
@@ -37,6 +42,19 @@ export function UrlBar({ onShowHistory }: Props) {
           hover:text-gray-200 text-xs rounded transition-colors shrink-0"
       >
         History
+      </button>
+      <button
+        onClick={onShowEnv}
+        className="relative px-3 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700
+          text-gray-400 hover:text-gray-200 text-xs rounded transition-colors shrink-0"
+      >
+        Env
+        {hasVars && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-indigo-500 text-white text-[9px]
+            font-bold rounded-full flex items-center justify-center leading-none">
+            {activeVarCount}
+          </span>
+        )}
       </button>
       <button
         onClick={send}
