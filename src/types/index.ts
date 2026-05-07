@@ -10,3 +10,4 @@ export type {
   Scenario,
 } from './scenario'
 export type { ConditionResult, MissionEvaluation } from './evaluation'
+export type { EnvVariable } from './env'
