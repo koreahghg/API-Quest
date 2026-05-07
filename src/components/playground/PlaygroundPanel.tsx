@@ -4,13 +4,18 @@ import { UrlBar } from './UrlBar'
 import { RequestTabs } from './RequestTabs'
 import { ResponseViewer } from './ResponseViewer'
 import { HistoryPanel } from './HistoryPanel'
+import { EnvironmentPanel } from './EnvironmentPanel'
 
 export function PlaygroundPanel() {
   const [showHistory, setShowHistory] = useState(false)
+  const [showEnv, setShowEnv] = useState(false)
 
   return (
     <div className="flex flex-col h-full bg-gray-950 relative">
-      <UrlBar onShowHistory={() => setShowHistory(true)} />
+      <UrlBar
+        onShowHistory={() => setShowHistory(true)}
+        onShowEnv={() => setShowEnv(true)}
+      />
       <div className="flex-1 overflow-hidden flex flex-col min-h-0">
         <div className="h-1/2 min-h-0 flex flex-col border-b border-gray-800">
           <RequestTabs />
@@ -23,6 +28,7 @@ export function PlaygroundPanel() {
         </div>
       </div>
       {showHistory && <HistoryPanel onClose={() => setShowHistory(false)} />}
+      {showEnv && <EnvironmentPanel onClose={() => setShowEnv(false)} />}
     </div>
   )
 }

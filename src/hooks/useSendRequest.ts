@@ -1,5 +1,6 @@
 'use client'
-import { useRequestStore, useResponseStore, useEvaluationStore, useScenarioStore, useHistoryStore } from '@/stores'
+import { useRequestStore, useResponseStore, useEvaluationStore, useScenarioStore, useHistoryStore, useEnvStore } from '@/stores'
+import { interpolate } from '@/lib/interpolate'
 import { STATUS_HINTS } from '@/constants/statusHints'
 import type { HttpResponse } from '@/types'
 
@@ -15,12 +16,26 @@ export function useSendRequest() {
   const completeMission = useScenarioStore((s) => s.completeMission)
   const revealNextHint = useScenarioStore((s) => s.revealNextHint)
   const addEntry = useHistoryStore((s) => s.addEntry)
+  const getVariableMap = useEnvStore((s) => s.getVariableMap)
 
   const send = async () => {
     const request = toHttpRequest()
+    const variables = getVariableMap()
+
+    // 환경 변수를 치환한 값으로 실제 HTTP 요청 수행
+    const resolvedUrl = interpolate(request.url, variables)
+    const resolvedHeaders = request.headers.map((h) => ({
+      ...h,
+      value: interpolate(h.value, variables),
+    }))
+    const resolvedQueryParams = request.queryParams.map((p) => ({
+      ...p,
+      value: interpolate(p.value, variables),
+    }))
+    const resolvedBody = request.body ? interpolate(request.body, variables) : request.body
 
     try {
-      new URL(request.url)
+      new URL(resolvedUrl)
     } catch {
       setError({
         kind: 'invalid_url',
@@ -37,17 +52,17 @@ export function useSendRequest() {
 
     try {
       const headers: Record<string, string> = Object.create(null)
-      request.headers
+      resolvedHeaders
         .filter((h) => h.enabled && h.key)
         .forEach((h) => { headers[h.key] = h.value })
 
       const fetchOptions: RequestInit = { method: request.method, headers }
       const hasBody = request.method !== 'GET' && request.method !== 'DELETE'
-      if (hasBody && request.body) {
-        fetchOptions.body = request.body
+      if (hasBody && resolvedBody) {
+        fetchOptions.body = resolvedBody
       }
 
-      const res = await fetch(request.url, fetchOptions)
+      const res = await fetch(resolvedUrl, fetchOptions)
       const duration = Date.now() - startTime
 
       const responseHeaders: Record<string, string> = {}
@@ -73,11 +88,14 @@ export function useSendRequest() {
       }
 
       setSuccess(response)
+      // 히스토리에는 원본 요청(변수명 그대로) 저장
       addEntry({ request, response, error: null, timestamp: Date.now() })
 
       const mission = getActiveMission()
       if (mission && mission.status === 'active') {
-        const evaluation = evaluate(mission, request, response)
+        // 미션 평가는 실제로 전송된 값(치환 후)으로 수행
+        const resolvedRequest = { ...request, url: resolvedUrl, headers: resolvedHeaders, queryParams: resolvedQueryParams, body: resolvedBody }
+        const evaluation = evaluate(mission, resolvedRequest, response)
         incrementAttempts(mission.id)
         if (evaluation.passed) {
           completeMission(mission.id)

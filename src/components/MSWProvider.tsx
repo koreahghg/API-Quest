@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
+const USE_MSW = process.env.NEXT_PUBLIC_USE_MSW === 'true'
+
 async function initMocks() {
   if (typeof window === 'undefined') return
   const { worker } = await import('@/mocks/browser')
@@ -9,14 +11,13 @@ async function initMocks() {
 }
 
 export function MSWProvider({ children }: { children: React.ReactNode }) {
-  const [ready, setReady] = useState(process.env.NODE_ENV !== 'development')
+  const [ready, setReady] = useState(!USE_MSW)
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      initMocks()
-        .catch((error) => console.error('MSW initialization failed:', error))
-        .finally(() => setReady(true))
-    }
+    if (!USE_MSW) return
+    initMocks()
+      .catch((error) => console.error('MSW initialization failed:', error))
+      .finally(() => setReady(true))
   }, [])
 
   if (!ready) return null
