@@ -42,7 +42,7 @@ export function EnvironmentPanel({ onClose }: Props) {
             <input
               type="text"
               value={v.key}
-              onChange={(e) => updateVariable(v.id, 'key', e.target.value)}
+              onChange={(e) => updateVariable(v.id, 'key', e.target.value.replace(/\s/g, ''))}
               placeholder="VARIABLE_NAME"
               className="w-40 bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-xs font-mono
                 text-indigo-300 placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-500"
