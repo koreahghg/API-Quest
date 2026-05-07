@@ -16,7 +16,7 @@ export function PanelOverlay({ onClose, children }: Props) {
   }, [onClose])
 
   return (
-    <div className="absolute inset-0 z-10 bg-gray-950 flex flex-col">
+    <div className="absolute inset-0 z-10 bg-gray-950 flex flex-col" role="dialog" aria-modal="true">
       {children}
     </div>
   )
