@@ -2,15 +2,14 @@
 import { useState } from 'react'
 import { useResponseStore } from '@/stores'
 import { STATUS_HINTS } from '@/constants/statusHints'
+import { getStatusColor } from '@/lib/statusColor'
 import { JsonRenderer } from './JsonRenderer'
 import { CopyButton } from './CopyButton'
 
 type ResTab = 'body' | 'headers' | 'raw'
 
 function StatusBadge({ status }: { status: number }) {
-  const color =
-    status < 300 ? 'text-emerald-400' : status < 400 ? 'text-sky-400' : 'text-red-400'
-  return <span className={`font-mono font-bold text-sm ${color}`}>{status}</span>
+  return <span className={`font-mono font-bold text-sm ${getStatusColor(status)}`}>{status}</span>
 }
 
 function HeadersView({ headers }: { headers: Record<string, string> }) {
