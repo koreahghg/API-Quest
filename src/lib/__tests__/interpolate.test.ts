@@ -41,4 +41,9 @@ describe('interpolate', () => {
     expect(interpolate('{{MISSING}}', { OTHER: 'value' }))
       .toBe('{{MISSING}}')
   })
+
+  it('한글 변수명을 치환한다', () => {
+    expect(interpolate('{{기본주소}}/users', { 기본주소: 'https://api.example.com' }))
+      .toBe('https://api.example.com/users')
+  })
 })
