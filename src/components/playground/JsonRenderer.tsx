@@ -52,7 +52,7 @@ function JsonNode({ value, depth = 0 }: { value: JsonValue; depth?: number }) {
         {entries.map(([k, v], i) => (
           <span key={k}>
             {padInner}
-            <span className="text-indigo-300">"{k}"</span>
+            <span className="text-indigo-300">{JSON.stringify(k)}</span>
             {': '}
             <JsonNode value={v} depth={depth + 1} />
             {i < entries.length - 1 ? ',' : ''}
