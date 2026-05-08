@@ -19,9 +19,7 @@ export function QuestSelector({ scenarios, onStart }: Props) {
       <div className="max-w-3xl mx-auto">
         <div className="mb-10">
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">🗺️ API Quest</h1>
-          <p className="text-gray-400 text-sm">
-            틀려야 배운다. HTTP를 직접 경험으로 익히세요.
-          </p>
+          <p className="text-gray-400 text-sm">HTTP를 직접 경험으로 익히세요.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
